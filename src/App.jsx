@@ -7,9 +7,9 @@ import RecordForm from "./components/RecordForm";
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<BalanceForm />} />
+      <Route path="/" element={<RecordForm/>} />
+      <Route path="/balance" element={<BalanceForm />} />
       <Route path="/record" element={<RecordsTable/>} />
-      <Route path="/recordform" element={<RecordForm/>} />
     </Routes>
   );
 };

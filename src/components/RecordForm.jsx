@@ -1,198 +1,110 @@
-// import { useState } from "react";
-// import axios from "axios";
-
-// const RecordsForm = () => {
-//   const [name, setName] = useState("");
-//   const [rate, setRate] = useState("");
-//   const [errorMessage, setErrorMessage] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [balance, setBalance] = useState(0);
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setErrorMessage(""); // Reset error message
-
-//     // Get current date
-//     const currentDate = new Date().toISOString();
-
-//     // Create the record object
-//     const recordData = {
-//       name,
-//       rate: parseFloat(rate), // Ensure rate is a number
-//       date: currentDate,
-//     };
-
-//     setLoading(true); // Start loading animation
-
-//     try {
-//       const response = await axios.post("http://localhost:5050/record", recordData);
-//       setBalance(response.data.balance);
-//       // Reset form fields
-//       setName("");
-//       setRate("");
-//     } catch (error) {
-//       setErrorMessage(error.response ? error.response.data : "Error adding record");
-//     } finally {
-//       setLoading(false); // Stop loading animation
-//     }
-//   };
-
-//   return (
-//     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5">
-//       <h2 className="text-2xl font-semibold mb-4 text-gray-800">📝 Add New Record</h2>
-
-//       {/* Display loading animation */}
-//       {loading && (
-//         <div className="flex justify-center">
-//           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-//         </div>
-//       )}
-
-//       {/* Display error message if there's an error */}
-//       {errorMessage && <p className="text-red-500 font-semibold">{errorMessage}</p>}
-
-//       <form onSubmit={handleSubmit} className="space-y-4">
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">Name</label>
-//           <input
-//             type="text"
-//             value={name}
-//             onChange={(e) => setName(e.target.value)}
-//             required
-//             className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-//           />
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">Rate</label>
-//           <input
-//             type="number"
-//             value={rate}
-//             onChange={(e) => setRate(e.target.value)}
-//             required
-//             className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-//           />
-//         </div>
-
-//         <button
-//           type="submit"
-//           className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
-//         >
-//           Add Record
-//         </button>
-//       </form>
-
-//       {/* Display current balance */}
-//       {balance > 0 && (
-//         <div className="mt-4 text-green-600 font-medium">
-//           Remaining Balance: <span className="font-bold">${balance.toFixed(2)}</span>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default RecordsForm;
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const RecordsForm = () => {
+const RecordForm = () => {
   const [name, setName] = useState("");
-  const [rate, setRate] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [rate, setRate] = useState(0);
+  const [currentBalance, setCurrentBalance] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [balance, setBalance] = useState(0);
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage(""); // Reset error message
-
-    // Get current date
-    const currentDate = new Date().toISOString();
-
-    // Create the record object
-    const recordData = {
-      name,
-      rate: parseFloat(rate), // Ensure rate is a number
-      date: currentDate,
+  // Fetch the initial balance
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        console.log("Fetching balance from API...");
+        const response = await axios.get("http://localhost:5050/balance");
+        console.log("Balance fetched:", response.data.balance);
+        setCurrentBalance(response.data.balance);
+      } catch (error) {
+        console.error("Error fetching balance", error);
+      }
     };
 
-    setLoading(true); // Start loading animation
+    fetchBalance();
+  }, []); // Runs once on mount
 
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5050/record", recordData);
-      setBalance(response.data.balance);
-      // Reset form fields
+      const response = await axios.post("http://localhost:5050/record", {
+        name,
+        rate,
+        date: new Date().toISOString(), // Add current date as ISO string
+      });
+
+      // Update current balance with the response from the API
+      setCurrentBalance(response.data.balance);
+      alert(`Record added! New balance: ${response.data.balance}`);
+      // Clear form fields
       setName("");
-      setRate("");
+      setRate(0);
     } catch (error) {
-      setErrorMessage(error.response ? error.response.data : "Error adding record");
+      console.error("Error adding record", error);
+      alert("Error adding record");
     } finally {
-      setLoading(false); // Stop loading animation
+      setLoading(false);
     }
   };
 
-  const handleGoToRecords = () => {
-    navigate("/record"); // Redirect to the records page using useNavigate
-  };
-
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">📝 Add New Record</h2>
+    <div className="relative">
+      {/* Background Animation */}
+      <div className="background-animation"></div>
 
-      {/* Display loading animation */}
-      {loading && (
-        <div className="flex justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        </div>
-      )}
-
-      {/* Display error message if there's an error */}
-      {errorMessage && <p className="text-red-500 font-semibold">{errorMessage}</p>}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Rate</label>
-          <input
-            type="number"
-            value={rate}
-            onChange={(e) => setRate(e.target.value)}
-            required
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-          />
+      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5 transition-transform transform hover:scale-105 duration-300 z-10">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-800">📄 Add Record</h2>
+          <div className="flex items-center">
+            <h3 className="text-lg font-semibold">
+              Balance: ₹ {currentBalance.toFixed(2)} 
+            </h3>
+            <button
+              onClick={() => navigate('/balance')}
+              className="ml-2 text-green-500 text-lg font-bold"
+            >
+              +
+            </button>
+          </div>
         </div>
 
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700">Name:</label>
+            <input
+              type="text"
+              className="mt-1 block w-full border border-gray-300 p-2 rounded"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Rate:</label>
+            <input
+              type="number"
+              className="mt-1 block w-full border border-gray-300 p-2 rounded"
+              value={rate}
+              onChange={(e) => setRate(parseFloat(e.target.value))}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className={`w-full bg-green-500 text-white rounded p-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={loading}
+          >
+            {loading ? "Adding..." : "Add Record"}
+          </button>
+        </form>
+        
         <button
-          type="submit"
-          className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
-        >
-          Add Record
-        </button>
-      </form>
-
-      {/* Display current balance */}
-      {balance > 0 && (
-        <div className="mt-4 text-green-600 font-medium">
-          Remaining Balance: <span className="font-bold">${balance.toFixed(2)}</span>
-        </div>
-      )}
-
-      {/* Button to go to records page */}
-      <div className="mt-6">
-        <button
-          onClick={handleGoToRecords}
-          className="w-full p-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200"
+          onClick={() => navigate('/record')}
+          className="mt-4 w-full bg-blue-500 text-white rounded p-2"
         >
           Go to Records
         </button>
@@ -201,4 +113,4 @@ const RecordsForm = () => {
   );
 };
 
-export default RecordsForm;
+export default RecordForm;

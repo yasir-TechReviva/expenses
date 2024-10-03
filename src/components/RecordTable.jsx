@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import html2pdf from "html2pdf.js"; // Import html2pdf
+import html2pdf from "html2pdf.js";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Import Font Awesome icons
 
 const RecordsTable = () => {
   const [records, setRecords] = useState([]);
@@ -12,13 +13,12 @@ const RecordsTable = () => {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const response = await axios.get("http://localhost:5050/record"); // Adjust the URL as necessary
+        const response = await axios.get("http://localhost:5050/record");
         setRecords(response.data);
       } catch (error) {
         setErrorMessage("Error fetching records");
       }
     };
-
     fetchRecords();
   }, []);
 
@@ -33,21 +33,19 @@ const RecordsTable = () => {
 
   // Function to download the current records as a PDF
   const downloadPDF = () => {
-    const element = document.getElementById("records-table"); // Get the table element
+    const element = document.getElementById("records-table");
     const opt = {
       margin: 1,
-      filename: 'records.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
+      filename: "records.pdf",
+      image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
     };
-
-    // Use html2pdf to generate PDF
     html2pdf().from(element).set(opt).save();
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5 transition-transform transform hover:scale-105 duration-300">
+    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">📋 Records</h2>
 
       {/* Display error message if there's an error */}
@@ -84,9 +82,7 @@ const RecordsTable = () => {
       {/* Action Buttons at the bottom */}
       <div className="flex justify-between mt-6">
         {/* Total Rate Button */}
-        <button
-          className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200 font-semibold"
-        >
+        <button className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200 font-semibold">
           Total Rate: ${totalRate.toFixed(2)}
         </button>
 
@@ -102,21 +98,21 @@ const RecordsTable = () => {
       {/* Centered Pagination controls */}
       <div className="flex justify-center items-center mt-6">
         <button
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className="mx-2 p-2 bg-blue-600 text-white rounded-md disabled:opacity-50 hover:bg-blue-700 transition duration-200"
+          className="mx-2 p-2 bg-blue-600 text-white rounded-full disabled:opacity-50 hover:bg-blue-700 transition duration-200"
         >
-          Previous
+          <FaArrowLeft />
         </button>
         <span className="text-sm font-medium">
           Page {currentPage} of {totalPages}
         </span>
         <button
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className="mx-2 p-2 bg-blue-600 text-white rounded-md disabled:opacity-50 hover:bg-blue-700 transition duration-200"
+          className="mx-2 p-2 bg-blue-600 text-white rounded-full disabled:opacity-50 hover:bg-blue-700 transition duration-200"
         >
-          Next
+          <FaArrowRight />
         </button>
       </div>
     </div>
