@@ -50,7 +50,7 @@ function BalanceForm() {
       <div className="mb-6 text-center">
         <h3 className="text-2xl font-bold tracking-wide text-gray-800">💰 Current Balance</h3>
         {balance !== null ? (
-          <p className="text-4xl font-extrabold mt-2 text-green-500">₹.{balance}</p>
+          <p className="text-4xl font-extrabold mt-2 text-green-500">₹{balance}</p>
         ) : (
           <p className="text-lg text-gray-500">Loading...</p>
         )}
