@@ -1,13 +1,16 @@
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Import Font Awesome icons
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; 
+import { Link } from "react-router-dom"; 
+import { HomeIcon } from '@heroicons/react/solid'; 
 
 const RecordsTable = () => {
   const [records, setRecords] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [recordsPerPage] = useState(10); // Number of records per page
+  const [recordsPerPage] = useState(10); 
 
   // Fetch records from the API when the component loads
   useEffect(() => {
@@ -45,7 +48,13 @@ const RecordsTable = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5">
+    <div className="relative max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5">
+      
+      {/* Home logo in top right corner */}
+      <Link to="/" className="absolute top-4 right-4">
+        <HomeIcon className="h-8 w-8 text-gray-500 hover:text-gray-700" /> {/* Adjust icon size/color as needed */}
+      </Link>
+
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">📋 Records</h2>
 
       {/* Display error message if there's an error */}

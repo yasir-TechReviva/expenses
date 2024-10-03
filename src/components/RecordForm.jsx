@@ -13,12 +13,9 @@ const RecordForm = () => {
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        console.log("Fetching balance from API...");
         const response = await axios.get("http://localhost:5050/balance");
-        console.log("Balance fetched:", response.data.balance);
         setCurrentBalance(response.data.balance);
       } catch (error) {
-        console.error("Error fetching balance", error);
       }
     };
 
@@ -38,13 +35,10 @@ const RecordForm = () => {
 
       // Update current balance with the response from the API
       setCurrentBalance(response.data.balance);
-      alert(`Record added! New balance: ${response.data.balance}`);
       // Clear form fields
       setName("");
       setRate(0);
     } catch (error) {
-      console.error("Error adding record", error);
-      alert("Error adding record");
     } finally {
       setLoading(false);
     }
